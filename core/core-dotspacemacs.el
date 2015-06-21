@@ -17,6 +17,10 @@
   (concat user-home-directory ".spacemacs")
   "Filepath to the installed dotfile.")
 
+(defvar dotspacemacs-version nil
+  "Set in .spacemacs and used to check user's .spacemacs file
+format version against the .spacemacs template.")
+
 (defvar dotspacemacs-verbose-loading nil
   "If non nil output loading progess in `*Messages*' buffer.")
 
@@ -205,6 +209,27 @@ before copying the file if the destination already exists."
       (copy-file (concat dotspacemacs-template-directory
                          ".spacemacs.template") dotspacemacs-filepath t)
       (message "%s has been installed." dotspacemacs-filepath))))
+
+(defun dotspacemacs/get-template-version ()
+  "Read the template version from .spacemacs.template"
+  (let (success)
+    (with-temp-buffer
+      (insert-file-contents
+       (concat dotspacemacs-template-directory ".spacemacs.template"))
+      (setq success
+            (re-search-forward
+             "^\\s-*?(setq\\s-+?dotspacemacs-version\\s-+?\"\\([0-9.]+\\)\"\\s-*?)"
+                     nil t))
+      (if success
+          (match-string 1)
+        (error "error: Cannot read .spacemacs.template version")))))
+
+(defun dotspacemacs/new-template-p ()
+  "Compare version of current template against user's .spacemacs
+version and return t if the template has changed."
+  (let ((dotspacemacs-template-version (dotspacemacs/get-template-version)))
+    (when dotspacemacs-version
+      (version< dotspacemacs-version dotspacemacs-template-version))))
 
 (defun dotspacemacs//ido-completing-read (prompt candidates)
   "Call `ido-completing-read' with a CANDIDATES alist where the key is

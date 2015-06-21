@@ -226,7 +226,16 @@ If TYPE is nil, just remove widgets."
                                                                       "Release 0.103.x"
                                                                       'subtree))
                                                    :mouse-face 'highlight
-                                                   :follow-link "\C-m")))))
+                                                   :follow-link "\C-m"))
+                     (when (dotspacemacs/new-template-p)
+                       (widget-insert "\n\nDetected new .spacemacs template ")
+                       (add-to-list 'spacemacs-buffer--note-widgets
+                                    (widget-create 'push-button
+                                                   :tag (propertize "Show diff" 'face 'font-lock-warning-face)
+                                                   :help-echo "Open ediff between your .spacemacs and template."
+                                                   :action (lambda (&rest ignore) (ediff-dotfile-and-template))
+                                                   :mouse-face 'highlight
+                                                   :follow-link "\C-m"))))))
     (spacemacs-buffer//insert-note file
                                    " Important Notes (Release 0.103.x) "
                                    widget-func))
