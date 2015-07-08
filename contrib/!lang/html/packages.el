@@ -133,7 +133,8 @@
      ("\\.handlebars\\'" . web-mode)
      ("\\.hbs\\'"        . web-mode)
      ("\\.eco\\'"        . web-mode)
-     ("\\.djhtml\\'"     . web-mode))))
+     ("\\.djhtml\\'"     . web-mode)
+     ("\\.jsx\\'"     . web-mode))))
 
 (defun html/init-emmet-mode ()
   (use-package emmet-mode
