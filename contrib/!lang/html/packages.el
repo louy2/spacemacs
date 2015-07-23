@@ -28,6 +28,8 @@
     yasnippet
     haml-mode
     slim-mode
+    tern
+    company-tern
     ))
 
 (defun html/init-css-mode ()
@@ -47,7 +49,8 @@
   (use-package web-mode
     :defer t
     :init
-    (push 'company-web-html company-backends-web-mode)
+    (when (configuration-layer/layer-usedp 'auto-completion)
+      (push '(company-tern company-web-html) company-backends-web-mode))
     :config
     (progn
       ;; Only use smartparens in web-mode
@@ -134,7 +137,7 @@
      ("\\.hbs\\'"        . web-mode)
      ("\\.eco\\'"        . web-mode)
      ("\\.djhtml\\'"     . web-mode)
-     ("\\.jsx\\'"     . web-mode))))
+     ("\\.jsx\\'"        . web-mode))))
 
 (defun html/init-emmet-mode ()
   (use-package emmet-mode
@@ -204,10 +207,34 @@
     (spacemacs|add-company-hook web-mode))
 
   (defun html/init-company-web ()
-    (use-package company-web)))
+    (use-package company-web :defer t))
+  (defun html/init-company-tern ()
+    (use-package company-tern :defer t)))
 
 (defun html/init-rainbow-delimiters ()
   (when (configuration-layer/package-usedp 'less-css-mode)
     (add-hook 'less-css-mode-hook 'rainbow-delimiters-mode))
   (when (configuration-layer/package-usedp 'scss-mode)
     (add-hook 'scss-mode-hook 'rainbow-delimiters-mode)))
+
+(defun html/init-tern ()
+  (use-package tern
+    :defer t
+    :init
+    ;; if find tern executable, set to command
+    ;; add hook, enable Tern only for jsx
+    (when (setq tern-command (cons (executable-find "tern") nil))
+      (add-hook 'web-mode-hook
+                (lambda ()
+                  (when (equal web-mode-content-type "jsx")
+                    (tern-mode 1)))))
+    :config
+    ;; copied from javascript layer
+    (progn
+      (evil-leader/set-key-for-mode 'web-mode "mrv" 'tern-rename-variable)
+        ;; changed to mrv to avoid conflict with mrr web-mode-element-rename
+      (evil-leader/set-key-for-mode 'web-mode "mhd" 'tern-get-docs)
+      (evil-leader/set-key-for-mode 'web-mode "mgg" 'tern-find-definition)
+      (evil-leader/set-key-for-mode 'web-mode "mgG" 'tern-find-definition-by-name)
+      (evil-leader/set-key-for-mode 'web-mode (kbd "m C-g") 'tern-pop-find-definition)
+      (evil-leader/set-key-for-mode 'web-mode "mht" 'tern-get-type))))
