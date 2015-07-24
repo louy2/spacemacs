@@ -49,8 +49,8 @@
   (use-package web-mode
     :defer t
     :init
-    (when (configuration-layer/layer-usedp 'auto-completion)
-      (push '(company-tern company-web-html) company-backends-web-mode))
+    (when (configuration-layer/package-usedp 'company)
+      (push 'company-web-html company-backends-web-mode))
     :config
     (progn
       ;; Only use smartparens in web-mode
@@ -207,9 +207,21 @@
     (spacemacs|add-company-hook web-mode))
 
   (defun html/init-company-web ()
-    (use-package company-web :defer t))
+    (use-package company-web
+      :if (configuration-layer/layer-usedp 'company)
+      :defer t))
   (defun html/init-company-tern ()
-    (use-package company-tern :defer t)))
+    (use-package company-tern
+      ;;:if (and (configuration-layer/package-usedp 'company)
+      ;;         (configuration-layer/package-usedp 'tern))
+      :defer t
+      :init
+      (add-hook 'web-mode-hook
+                (lambda ()
+                  (when (equal web-mode-content-type "jsx")
+                    (setcar company-backends-web-mode
+                            (cons 'company-tern (cons (car company-backends) nil))
+                            )))))))
 
 (defun html/init-rainbow-delimiters ()
   (when (configuration-layer/package-usedp 'less-css-mode)
