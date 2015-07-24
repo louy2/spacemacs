@@ -6,6 +6,9 @@
  - [[#description][Description]]
      - [[#features][Features:]]
  - [[#install][Install]]
+     - [[#tern][Tern]]
+         - [[#extentions][Extentions]]
+     - [[#formatting][Formatting]]
  - [[#key-bindings][Key Bindings]]
      - [[#js2-mode][js2-mode]]
      - [[#folding-js2-mode][Folding (js2-mode)]]
@@ -34,11 +37,37 @@ To use this contribution add it to your =~/.spacemacs=
   (setq-default dotspacemacs-configuration-layers '(javascript))
 #+END_SRC
 
+** Tern
+
 You will also need to install =tern= to use the auto-completion and
 documentation features:
 #+BEGIN_SRC sh
   $ npm install -g tern
 #+END_SRC
+
+*** Extentions
+
+To let the tern complete environments not loaded in emacs, [[http://ternjs.net/doc/manual.html#configuration][configure]] 
+your tern instance to use extensions by a =.tern-project= file in 
+the project folder:
+#+BEGIN_SRC json
+  {
+    "libs": [
+      "browser",
+      "jquery",
+    ],
+    "loadEagerly": [],
+    "plugins": {
+      "node": {},
+      "requirejs": {
+        "baseURL": "./",
+        "paths": {}
+      }
+    }
+  }
+#+END_SRC
+
+** Formatting
 
 To use the formatting features, install =js-beautify=:
 #+BEGIN_SRC sh
